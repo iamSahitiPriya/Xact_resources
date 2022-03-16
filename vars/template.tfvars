@@ -1,7 +1,7 @@
-aws_region = "us-east-1"
+aws_region = "ap-south-1"
 
 vpc_id = ""
 
 cidr_block = ""
 
-key_name = ""
+key_name = "xact-jenkins-master"

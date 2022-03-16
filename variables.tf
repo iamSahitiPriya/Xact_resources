@@ -1,6 +1,6 @@
 variable "aws_region" {
   description = "AWS region to create resources"
-  default     = "us-east-1"
+  default     = "ap-south-1"
 }
 
 variable "vpc_id" {
