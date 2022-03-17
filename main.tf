@@ -45,7 +45,7 @@ data "aws_ami" "amazon_linux" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-2.0*"]
+    values = ["amzn2-ami-kernel-5.10-hvm-2.0*"]
   }
 
   filter {
@@ -63,7 +63,7 @@ data "aws_ami" "amazon_linux" {
 
 resource "aws_instance" "web" {
   ami             = data.aws_ami.amazon_linux.id
-  instance_type   = "t2.micro"
+  instance_type   = "t2.large"
   key_name        = var.key_name
   security_groups = [aws_security_group.jenkins_sg.name]
   user_data       = "${file("install_jenkins.sh")}"
