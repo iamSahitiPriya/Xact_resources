@@ -1,3 +1,4 @@
-output "output_name" {
-    value = "some resource"
+output "jenkins-ip" {
+    value = aws_instance.web.associate_public_ip_address
+    description = "Public IP address associated with instance."
 }

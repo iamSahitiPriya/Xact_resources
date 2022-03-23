@@ -12,15 +12,7 @@ provider "aws" {
   region = var.aws_region
 }
 
-provider "random" {
-  # Configuration options
-}
 
-resource "random_password" "password" {
-  length = 20
-  special = false
-  override_special = "_%@"
-}
 
 resource "aws_db_instance" "default" {
   allocated_storage    = 20
@@ -30,8 +22,7 @@ resource "aws_db_instance" "default" {
   instance_class       = "db.t3.medium"
   name                 = "ntweeklydb001"
   username             = "dbadmin1"
-  password             = random_password.password.result
+  password             = var.password
   skip_final_snapshot  = true
   publicly_accessible  = true
-
 }
