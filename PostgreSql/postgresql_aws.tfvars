@@ -1,2 +1,7 @@
 aws_region = "ap-south-1"
-password= "fake-password-1" // change it
+username="fakeuser"
+password= "fakepwd" // change it
+
+vpc_id = ""
+
+cidr_block = "0.0.0.0/0"
