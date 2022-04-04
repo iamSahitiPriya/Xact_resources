@@ -101,12 +101,29 @@ resource "aws_ecs_task_definition" "xact-task-def" {
       memory    = 2048
       essential = true
       environment: [
-        {name: "MY_MICRONAUT_ENVIRONMENTS", value: "dev"}
+        {name: "MICRONAUT_ENVIRONMENTS", value: var.environment}
       ],
       portMappings = [
         {
           containerPort = 8080
           hostPort      = 8080
+        }
+      ]
+      logConfiguration: {
+        logDriver: "awslogs",
+        options: {
+          awslogs-group: "/fargate/service/xact-${var.environment}",
+          awslogs-region: var.aws_region
+          awslogs-stream-prefix: "ecs"
+        }
+      }
+      secrets: [{
+        name: "DB_USER",
+        valueFrom: "arn:aws:secretsmanager:${var.aws_region}:${var.account}:secret:${var.DB_USER}::"
+        },
+        {
+          name: "DB_PWD",
+          valueFrom: "arn:aws:secretsmanager:${var.aws_region}:${var.account}:secret:${var.DB_PWD}::"
         }
       ]
     }
@@ -139,7 +156,7 @@ resource "aws_lb" "xact-backend-alb" {
   enable_deletion_protection = true
 
   tags = {
-    Environment = "dev"
+    Environment = var.environment
   }
 }
 
@@ -168,7 +185,7 @@ resource "aws_iam_role" "xact-backend-role-ecs" {
         Effect = "Allow"
         Sid    = ""
         Principal = {
-          Service = "ecs-tasks.amazonaws.com"
+          Service = ["ecs-tasks.amazonaws.com","ssm.amazonaws.com","kms.amazonaws.com"]
         }
       },
     ]
@@ -177,5 +194,6 @@ resource "aws_iam_role" "xact-backend-role-ecs" {
 
 resource "aws_iam_role_policy_attachment" "xact-service-ecr-role" {
   role = "${aws_iam_role.xact-backend-role-ecs.name}"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  policy_arn = "arn:aws:iam::${var.account}:policy/ecsSecretManagerPolicy"
 }
+
