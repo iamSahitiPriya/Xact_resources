@@ -49,8 +49,8 @@ resource "aws_db_instance" "xact-db" {
   engine               = "postgres"
   identifier           =  "xact-db"
   engine_version       = "14"
-  instance_class       = "db.t3.micro"
-  name                 = "xactmastername"
+  instance_class       = "db.t3.medium"
+  name                 = "xactprod"
   username             = var.username
   password             = var.password
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
