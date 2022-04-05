@@ -58,7 +58,7 @@ resource "aws_security_group" "ecs_sg" {
 
 
 resource "aws_ecs_cluster" "xact-backend-cluster" {
-  name = "xact-backend-cluster"
+  name = "xact-backend-cluster-prod"
 
   setting {
     name  = "containerInsights"
@@ -67,7 +67,7 @@ resource "aws_ecs_cluster" "xact-backend-cluster" {
 }
 
 resource "aws_ecs_service" "xact-service" {
-  name            = "xact-service"
+  name            = "xact-service-prod"
   cluster         = aws_ecs_cluster.xact-backend-cluster.id
   launch_type = "FARGATE"
   task_definition = aws_ecs_task_definition.xact-task-def.arn
@@ -80,13 +80,13 @@ resource "aws_ecs_service" "xact-service" {
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.xact-backend-tg.arn
-    container_name   = "xact-task-def"
+    container_name   = "xact-task-def-prod"
     container_port   = 8080
   }
 }
 
 resource "aws_ecs_task_definition" "xact-task-def" {
-  family = "xact-task-def"
+  family = "xact-task-def-prod"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 1024
@@ -95,7 +95,7 @@ resource "aws_ecs_task_definition" "xact-task-def" {
   execution_role_arn  = aws_iam_role.xact-backend-role-ecs.arn
   container_definitions = jsonencode([
     {
-      name      = "xact-task-def"
+      name      = "xact-task-def-prod"
       image     = "730911736748.dkr.ecr.ap-south-1.amazonaws.com/xact-prod:latest"
       cpu       = 1024
       memory    = 2048
@@ -136,7 +136,7 @@ resource "aws_ecs_task_definition" "xact-task-def" {
 
 resource "aws_lb_target_group" "xact-backend-tg" {
   target_type = "ip"
-  name     = "xact-backend-tg"
+  name     = "xact-backend-tg-prod"
   port     = 80
   protocol = "HTTP"
   vpc_id   = var.vpc_id
@@ -147,7 +147,7 @@ resource "aws_lb_target_group" "xact-backend-tg" {
 }
 
 resource "aws_lb" "xact-backend-alb" {
-  name               = "xact-backend-alb"
+  name               = "xact-backend-alb-prod"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb-sg.id]
@@ -175,7 +175,7 @@ resource "aws_lb_listener" "front_end" {
 }
 
 resource "aws_iam_role" "xact-backend-role-ecs" {
-  name = "xact-ecsTaskExecutionRole"
+  name = "xact-ecsTaskExecutionRole-prod"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
