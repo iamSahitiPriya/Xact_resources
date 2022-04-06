@@ -124,6 +124,10 @@ resource "aws_ecs_task_definition" "xact-task-def" {
         {
           name: "DB_PWD",
           valueFrom: "arn:aws:secretsmanager:${var.aws_region}:${var.account}:secret:${var.DB_PWD}::"
+        },
+        {
+          name: "OIDC_ISSUER",
+          valueFrom: "arn:aws:secretsmanager:${var.aws_region}:${var.account}:secret:${var.OIDC_ISSUER}::"
         }
       ]
     }
