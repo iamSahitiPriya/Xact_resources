@@ -12,3 +12,5 @@ DB_USER = "dev/dbuser-h24eWj:DEV_DB_USER"
 
 DB_PWD ="dev/dbpwd-0wwWre:DEV_DB_PWD"
 
+OIDC_ISSUER = "dev/oidc_issuer-oMVG9u:DEV_OIDC_ISSUER"
+

@@ -25,3 +25,7 @@ variable "DB_USER" {
 variable "DB_PWD" {
   description = "ssm path of param"
 }
+
+variable "OIDC_ISSUER" {
+  description = "OIDC Issuer for validating Access Token"
+}
