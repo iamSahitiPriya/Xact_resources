@@ -14,8 +14,4 @@ DB_PWD ="qa/dbpwd-0wwWre:QA_DB_PWD"
 
 OIDC_ISSUER = "qa/oidc_issuer-oMVG9u:QA_OIDC_ISSUER"
 
-aws_acces_key = ""
-
-aws_secret_key = ""
-
 

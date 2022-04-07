@@ -29,9 +29,3 @@ variable "DB_PWD" {
 variable "OIDC_ISSUER" {
   description = "OIDC Issuer for validating Access Token"
 }
-variable "aws_access_key" {
-  description = "access key for our bucket"
-}
-variable "aws_secret_key" {
-  description = "secret key"
-}
