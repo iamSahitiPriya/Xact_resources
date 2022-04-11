@@ -32,7 +32,7 @@ resource "aws_security_group" "alb-sg" {
   }
 }
 resource "aws_security_group" "ecs_sg" {
-  name        = "ecs_dev_sg"
+  name        = "ecs_qa_sg"
   description = "Allow ECS Traffic"
   vpc_id      = var.vpc_id
 
@@ -52,13 +52,13 @@ resource "aws_security_group" "ecs_sg" {
   }
 
   tags = {
-    Name = "ECS  SG"
+    Name = "ECS QA SG"
   }
 }
 
 
 resource "aws_ecs_cluster" "xact-backend-cluster" {
-  name = "xact-backend-cluster"
+  name = "xact-backend-cluster-qa"
 
   setting {
     name  = "containerInsights"
@@ -67,7 +67,7 @@ resource "aws_ecs_cluster" "xact-backend-cluster" {
 }
 
 resource "aws_ecs_service" "xact-service" {
-  name            = "xact-service"
+  name            = "xact-service-qa"
   cluster         = aws_ecs_cluster.xact-backend-cluster.id
   launch_type     = "FARGATE"
   task_definition = aws_ecs_task_definition.xact-task-def.arn
@@ -80,7 +80,7 @@ resource "aws_ecs_service" "xact-service" {
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.xact-backend-tg.arn
-    container_name   = "xact-task-def"
+    container_name   = "xact-task-def-qa"
     container_port   = 8080
   }
 }
