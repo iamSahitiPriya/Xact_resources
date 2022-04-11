@@ -1,5 +1,5 @@
 variable "bucket_name" {
-  default = "xact-app-qa"
+  default = "xact-app-prod"
 }
 variable "acl_value" {
   default = "private"
