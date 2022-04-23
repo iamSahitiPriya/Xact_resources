@@ -13,8 +13,8 @@ resource "aws_security_group" "sonar_sg" {
 
   ingress {
     description      = "Allow from Personal CIDR block"
-    from_port        = 9000
-    to_port          = 9000
+    from_port        = 80
+    to_port          = 80
     protocol         = "tcp"
     cidr_blocks      = [var.cidr_block]
   }
