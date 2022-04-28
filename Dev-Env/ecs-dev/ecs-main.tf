@@ -128,6 +128,10 @@ resource "aws_ecs_task_definition" "xact-task-def" {
         {
           name: "OIDC_ISSUER",
           valueFrom: "arn:aws:secretsmanager:${var.aws_region}:${var.account}:secret:${var.OIDC_ISSUER}::"
+        },
+        {
+          name: "OKTA_API_KEY",
+          valueFrom: "arn:aws:secretsmanager:${var.aws_region}:${var.account}:secret:${var.OKTA_API_KEY}::"
         }
       ]
     }
