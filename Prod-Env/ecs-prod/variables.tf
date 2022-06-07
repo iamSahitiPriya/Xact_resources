@@ -29,3 +29,4 @@ variable "DB_PWD" {
 variable "OIDC_ISSUER" {
   description = "OIDC Issuer for validating Access Token"
 }
+

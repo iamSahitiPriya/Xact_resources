@@ -14,5 +14,3 @@ DB_PWD ="dev/dbpwd-0wwWre:DEV_DB_PWD"
 
 OIDC_ISSUER = "dev/oidc_issuer-oMVG9u:DEV_OIDC_ISSUER"
 
-OKTA_API_KEY = "dev/okta_api_key-XIdMoY:DEV_OKTA_API_KEY"
-

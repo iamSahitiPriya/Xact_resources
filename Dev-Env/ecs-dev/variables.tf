@@ -29,7 +29,3 @@ variable "DB_PWD" {
 variable "OIDC_ISSUER" {
   description = "OIDC Issuer for validating Access Token"
 }
-
-variable "OKTA_API_KEY" {
-  description = "OKTA_API_KEY For accessing Users"
-}

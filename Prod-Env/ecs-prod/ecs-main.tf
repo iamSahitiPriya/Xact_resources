@@ -7,7 +7,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "alb-sg" {
-  name        = "alb_sg"
+  name        = "alb_sg-prod"
   description = "Allow ALB Traffic"
   vpc_id      = var.vpc_id
 
