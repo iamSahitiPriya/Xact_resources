@@ -7,8 +7,8 @@ provider "aws" {
 }
 
 
-resource "aws_security_group" "alb-sg" {
-  name        = "alb_sg"
+resource "aws_security_group" "alb-sg-qa" {
+  name        = "alb_sg-qa"
   description = "Allow ALB Traffic"
   vpc_id      = var.vpc_id
 
@@ -28,7 +28,7 @@ resource "aws_security_group" "alb-sg" {
   }
 
   tags = {
-    Name = "ALB  SG"
+    Name = "ALB  SG QA"
   }
 }
 resource "aws_security_group" "ecs_sg" {
@@ -41,7 +41,7 @@ resource "aws_security_group" "ecs_sg" {
     from_port       = 8080
     to_port         = 8080
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb-sg.id]
+    security_groups = [aws_security_group.alb-sg-qa.id]
   }
   egress {
     from_port        = 0
@@ -155,7 +155,7 @@ resource "aws_lb" "xact-backend-alb" {
   name               = "xact-backend-alb-qa"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb-sg.id]
+  security_groups    = [aws_security_group.alb-sg-qa.id]
   subnets            = ["subnet-042b76f3f4aa643c9", "subnet-02249a393eb372da6", "subnet-0184ccf3faa75628d"]
 
   enable_deletion_protection = true
