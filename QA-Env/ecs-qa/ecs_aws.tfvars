@@ -8,10 +8,10 @@ environment = "qa"
 
 account = "730911736748"
 
-DB_USER = "qa/dbuser-h24eWj:QA_DB_USER"
+DB_USER = "qa/dbuser-28BOGO:QA_DB_USER"
 
-DB_PWD ="qa/dbpwd-0wwWre:QA_DB_PWD"
+DB_PWD ="qa/dbpwd-M1lnea:QA_DB_PWD"
 
-OIDC_ISSUER = "qa/oidc_issuer-oMVG9u:QA_OIDC_ISSUER"
+OIDC_ISSUER = "qa/oidc_issuer-vaawnB:QA_OIDC_ISSUER"
 
 

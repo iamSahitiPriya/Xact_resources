@@ -6,7 +6,7 @@ provider "aws" {
   region = var.aws_region
 }
 
-resource "aws_security_group" "alb-sg" {
+resource "aws_security_group" "alb-sg-prod" {
   name        = "alb_sg-prod"
   description = "Allow ALB Traffic"
   vpc_id      = var.vpc_id
@@ -30,7 +30,7 @@ resource "aws_security_group" "alb-sg" {
     Name = "ALB  SG"
   }
 }
-resource "aws_security_group" "ecs_sg" {
+resource "aws_security_group" "ecs_sg-prod" {
   name        = "ecs_prod_sg"
   description = "Allow ECS Traffic"
   vpc_id      = var.vpc_id
@@ -40,7 +40,7 @@ resource "aws_security_group" "ecs_sg" {
     from_port        = 8080
     to_port          = 8080
     protocol         = "tcp"
-    security_groups      =  [aws_security_group.alb-sg.id]
+    security_groups      =  [aws_security_group.alb-sg-prod.id]
   }
   egress {
     from_port        = 0
@@ -57,7 +57,7 @@ resource "aws_security_group" "ecs_sg" {
 
 
 
-resource "aws_ecs_cluster" "xact-backend-cluster" {
+resource "aws_ecs_cluster" "xact-backend-cluster-prod" {
   name = "xact-backend-cluster-prod"
 
   setting {
@@ -66,26 +66,26 @@ resource "aws_ecs_cluster" "xact-backend-cluster" {
   }
 }
 
-resource "aws_ecs_service" "xact-service" {
+resource "aws_ecs_service" "xact-service-prod" {
   name            = "xact-service-prod"
-  cluster         = aws_ecs_cluster.xact-backend-cluster.id
+  cluster         = aws_ecs_cluster.xact-backend-cluster-prod.id
   launch_type = "FARGATE"
-  task_definition = aws_ecs_task_definition.xact-task-def.arn
+  task_definition = aws_ecs_task_definition.xact-task-def-prod.arn
   desired_count   = 1
   network_configuration {
     subnets = ["subnet-042b76f3f4aa643c9","subnet-02249a393eb372da6","subnet-0184ccf3faa75628d"]
     assign_public_ip = true
-    security_groups = [aws_security_group.ecs_sg.id]
+    security_groups = [aws_security_group.ecs_sg-prod.id]
 
   }
   load_balancer {
-    target_group_arn = aws_lb_target_group.xact-backend-tg.arn
+    target_group_arn = aws_lb_target_group.xact-backend-tg-prod.arn
     container_name   = "xact-task-def-prod"
     container_port   = 8080
   }
 }
 
-resource "aws_ecs_task_definition" "xact-task-def" {
+resource "aws_ecs_task_definition" "xact-task-def-prod" {
   family = "xact-task-def-prod"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -138,7 +138,7 @@ resource "aws_ecs_task_definition" "xact-task-def" {
   }
 }
 
-resource "aws_lb_target_group" "xact-backend-tg" {
+resource "aws_lb_target_group" "xact-backend-tg-prod" {
   target_type = "ip"
   name     = "xact-backend-tg-prod"
   port     = 80
@@ -150,11 +150,11 @@ resource "aws_lb_target_group" "xact-backend-tg" {
   }
 }
 
-resource "aws_lb" "xact-backend-alb" {
+resource "aws_lb" "xact-backend-alb-prod" {
   name               = "xact-backend-alb-prod"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb-sg.id]
+  security_groups    = [aws_security_group.alb-sg-prod.id]
   subnets            = ["subnet-042b76f3f4aa643c9","subnet-02249a393eb372da6","subnet-0184ccf3faa75628d"]
 
   enable_deletion_protection = true
@@ -165,7 +165,7 @@ resource "aws_lb" "xact-backend-alb" {
 }
 
 resource "aws_lb_listener" "front_end" {
-  load_balancer_arn = aws_lb.xact-backend-alb.arn
+  load_balancer_arn = aws_lb.xact-backend-alb-prod.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
@@ -174,7 +174,7 @@ resource "aws_lb_listener" "front_end" {
 
   default_action {
     type = "forward"
-    target_group_arn = aws_lb_target_group.xact-backend-tg.arn
+    target_group_arn = aws_lb_target_group.xact-backend-tg-prod.arn
   }
 }
 
