@@ -8,10 +8,10 @@ environment = "prod"
 
 account = "730911736748"
 
-DB_USER = "prod/dbuser-h24eWj:PROD_DB_USER"
+DB_USER = "prod/dbuser-7JdaoY:PROD_DB_USER"
 
-DB_PWD ="prod/dbpwd-0wwWre:PROD_DB_PWD"
+DB_PWD ="prod/dbpwd-gTDoH2:PROD_DB_PWD"
 
-OIDC_ISSUER = "prod/oidc_issuer-oMVG9u:PROD_OIDC_ISSUER"
+OIDC_ISSUER = "prod/oidc_issuer-Xmz0eb:PROD_OIDC_ISSUER"
 
 
