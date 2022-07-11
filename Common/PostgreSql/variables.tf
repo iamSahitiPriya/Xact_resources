@@ -13,6 +13,16 @@ variable "password" {
   default     = "fake-password"
 }
 
+variable "username_np" {
+  description = "Default password for non prod"
+  default     = "fake-username"
+}
+
+variable "password_np" {
+  description = "Default password non prod"
+  default     = "fake-password"
+}
+
 variable "vpc_id" {
   description = "VPC for PostgreSql"
 }
