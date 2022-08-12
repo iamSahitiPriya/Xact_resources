@@ -27,7 +27,7 @@ resource "aws_cloudfront_distribution" "qa_distribution" {
   comment             = "CloudFront distribution for QA"
   default_root_object = "index.html"
 
-  aliases = ["qa.project-xact.in"]
+  aliases = ["qa.xact.thoughtworks.net"]
   custom_error_response {
     error_code = 403
     response_code = 200
