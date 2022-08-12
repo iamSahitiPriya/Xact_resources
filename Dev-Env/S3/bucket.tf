@@ -27,7 +27,7 @@ resource "aws_cloudfront_distribution" "dev_distribution" {
   comment             = "CloudFront distribution for Development"
   default_root_object = "index.html"
 
-  aliases = ["dev.project-xact.in"]
+  aliases = ["dev.xact.thoughtworks.net"]
   custom_error_response {
     error_code = 403
     response_code = 200
