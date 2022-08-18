@@ -49,7 +49,7 @@ resource "aws_db_instance" "xact-db_non_prod" {
   engine               = "postgres"
   identifier           =  "xact-db-np"
   engine_version       = "14"
-  instance_class       = "db.t3.medium"
+  instance_class       = "db.t3.small"
   name                 = "xactnonprod"
   username             = var.username_np
   password             = var.password_np
