@@ -14,4 +14,6 @@ DB_PWD ="qa/dbpwd-M1lnea:QA_DB_PWD"
 
 OIDC_ISSUER = "qa/oidc_issuer-vaawnB:QA_OIDC_ISSUER"
 
+AUTH_USERNAME = "qa/auth_token-ojgZ6A:auth_username"
 
+AUTH_PASSWORD = "qa/auth_token-ojgZ6A:auth_password"
