@@ -30,3 +30,11 @@ variable "OIDC_ISSUER" {
   description = "OIDC Issuer for validating Access Token"
 }
 
+variable "AUTH_USERNAME" {
+  description = "ssm path of param"
+}
+
+variable "AUTH_PASSWORD" {
+  description = "ssm path of param"
+}
+
