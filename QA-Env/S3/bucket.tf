@@ -63,7 +63,7 @@ resource "aws_cloudfront_distribution" "qa_distribution" {
     Environment = "Qa"
   }
   viewer_certificate {
-    acm_certificate_arn = "arn:aws:acm:us-east-1:730911736748:certificate/d3d78241-e69f-4979-bd54-ccfc02d4d4e2"
+    acm_certificate_arn = "arn:aws:acm:us-east-1:730911736748:certificate/c1998ccf-65ac-4de3-a8b2-d4fec167575a"
     ssl_support_method = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
