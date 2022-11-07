@@ -128,6 +128,14 @@ resource "aws_ecs_task_definition" "xact-task-def" {
         {
           name: "OIDC_ISSUER",
           valueFrom: "arn:aws:secretsmanager:${var.aws_region}:${var.account}:secret:${var.OIDC_ISSUER}::"
+        },
+        {
+          name: "AUTH_USERNAME",
+          valueFrom: "arn:aws:secretsmanager:${var.aws_region}:${var.account}:secret:${var.AUTH_USERNAME}::"
+        },
+        {
+          name: "AUTH_PASSWORD",
+          valueFrom: "arn:aws:secretsmanager:${var.aws_region}:${var.account}:secret:${var.AUTH_PASSWORD}::"
         }
       ]
     }
@@ -169,7 +177,7 @@ resource "aws_lb_listener" "front_end" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:ap-south-1:730911736748:certificate/4b530396-acfa-40b2-8e05-f5def63db12d"
+  certificate_arn   = "arn:aws:acm:ap-south-1:730911736748:certificate/e5a4aa42-fd42-4977-a2d1-73d63bcffe45"
 
 
   default_action {
