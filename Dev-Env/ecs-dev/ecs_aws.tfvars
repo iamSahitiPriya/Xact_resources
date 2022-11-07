@@ -14,3 +14,8 @@ DB_PWD ="dev/dbpwd-0wwWre:DEV_DB_PWD"
 
 OIDC_ISSUER = "dev/oidc_issuer-oMVG9u:DEV_OIDC_ISSUER"
 
+AUTH_USERNAME = "dev/auth_token-RrCa9B:auth_username"
+
+AUTH_PASSWORD = "dev/auth_token-RrCa9B:auth_password"
+
+
