@@ -5,7 +5,7 @@ sudo wget -O /etc/yum.repos.d/jenkins.repo \
     https://pkg.jenkins.io/redhat-stable/jenkins.repo
 sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
 sudo yum upgrade
-sudo amazon-linux-extras install java-openjdk11 -y
+sudo yum install java-17-amazon-corretto-headless -y
 sudo yum install jenkins -y
 sudo yum install git -y
 sudo yum install -y xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib
