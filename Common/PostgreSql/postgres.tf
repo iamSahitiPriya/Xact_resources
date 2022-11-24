@@ -1,21 +1,27 @@
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 0.15"
+
   required_providers {
     aws = {
-      source = "hashicorp/aws"
-      version = "3.47.0"
+      source  = "hashicorp/aws"
+      version = ">= 4.0.0"
     }
-    postgresql = {
-      source = "cyrilgdn/postgresql"
-      version = "1.15.0"
-    }
+  }
 
+  backend "s3" {
+    bucket         = "xact-infra-remote-state-common"
+    key = "postgres/terraform.tfstate"
+    region         = "ap-south-1"
+    encrypt        = true
   }
 }
 
-
 provider "aws" {
   region = var.aws_region
+}
+
+module "remote_state" {
+  source                  = "../../"
 }
 
 resource "aws_security_group" "rds_sg_np" {

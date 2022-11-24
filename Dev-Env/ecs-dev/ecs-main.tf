@@ -1,9 +1,27 @@
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 0.15"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4.0.0"
+    }
+  }
+
+  backend "s3" {
+    bucket         = "xact-infra-remote-state-dev"
+    key = "ecs/terraform.tfstate"
+    region         = "ap-south-1"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
   region = var.aws_region
+}
+
+module "remote_state" {
+  source                  = "../../"
 }
 
 resource "aws_security_group" "alb-sg" {
@@ -208,4 +226,5 @@ resource "aws_iam_role_policy_attachment" "xact-service-ecr-role" {
   role = "${aws_iam_role.xact-backend-role-ecs.name}"
   policy_arn = "arn:aws:iam::${var.account}:policy/ecsSecretManagerPolicy"
 }
+
 

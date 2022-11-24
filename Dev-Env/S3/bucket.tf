@@ -1,5 +1,27 @@
+terraform {
+  required_version = ">= 0.15"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4.0.0"
+    }
+  }
+
+  backend "s3" {
+    bucket         = "xact-infra-remote-state-dev"
+    key = "s3/terraform.tfstate"
+    region         = "ap-south-1"
+    encrypt        = true
+  }
+}
+
 provider "aws" {
   region = var.aws_region
+}
+
+module "remote_state" {
+  source                  = "../../"
 }
 
 resource "aws_s3_bucket" "xact-app-dev" {
