@@ -56,7 +56,7 @@ resource "aws_db_instance" "xact-db_non_prod" {
   identifier           =  "xact-db-np"
   engine_version       = "14"
   instance_class       = "db.t3.small"
-  name                 = "xactnonprod"
+  db_name                 = "xactnonprod"
   username             = var.username_np
   password             = var.password_np
   vpc_security_group_ids = [aws_security_group.rds_sg_np.id]
@@ -98,7 +98,7 @@ resource "aws_db_instance" "xact-db_prod" {
   identifier           =  "xact-db-prod"
   engine_version       = "14"
   instance_class       = "db.t3.medium"
-  name                 = "xactprod"
+  db_name                 = "xactprod"
   username             = var.username
   password             = var.password
   vpc_security_group_ids = [aws_security_group.rds_sg_prod.id]
