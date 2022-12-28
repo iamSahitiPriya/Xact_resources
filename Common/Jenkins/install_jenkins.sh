@@ -17,6 +17,7 @@ sudo yum install amazon-ecr-credential-helper -y
 sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 sudo unzip awscliv2.zip
 sudo ./aws/install
+sudo amazon-linux-extras install postgresql10 -y
 sudo systemctl daemon-reload
 sudo systemctl start jenkins
 sudo systemctl status jenkins
