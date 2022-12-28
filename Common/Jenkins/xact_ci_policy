@@ -4,84 +4,67 @@
         {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
-            "Action": "ecs:UpdateService",
-            "Resource": "arn:aws:ecs:*:730911736748:service/*/*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ecr:GetAuthorizationToken",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ecr:GetAuthorizationToken",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:GetRepositoryPolicy",
-                "ecr:DescribeRepositories",
-                "ecr:ListImages",
-                "ecr:DescribeImages",
-                "ecr:BatchGetImage",
-                "ecr:GetLifecyclePolicy",
-                "ecr:GetLifecyclePolicyPreview",
-                "ecr:ListTagsForResource",
-                "ecr:DescribeImageScanFindings",
-                "ecr:InitiateLayerUpload",
-                "ecr:UploadLayerPart",
-                "ecr:CompleteLayerUpload",
-                "ecr:PutImage"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Action": [
-                "ecs:DescribeServices",
-                "ecs:CreateTaskSet",
-                "ecs:UpdateServicePrimaryTaskSet",
-                "ecs:DeleteTaskSet",
-                "elasticloadbalancing:DescribeTargetGroups",
-                "elasticloadbalancing:DescribeListeners",
-                "elasticloadbalancing:ModifyListener",
-                "elasticloadbalancing:DescribeRules",
-                "elasticloadbalancing:ModifyRule",
-                "lambda:InvokeFunction",
-                "cloudwatch:DescribeAlarms",
-                "sns:Publish",
-                "s3:GetObject",
-                "s3:GetObjectVersion"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "iam:PassRole"
-            ],
-            "Effect": "Allow",
+            "Action": "iam:PassRole",
             "Resource": "*",
             "Condition": {
                 "StringLike": {
-                    "iam:PassedToService": [
-                        "ecs-tasks.amazonaws.com"
-                    ]
+                    "iam:PassedToService": "ecs-tasks.amazonaws.com"
                 }
             }
         },
         {
+            "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
+                "elasticloadbalancing:ModifyListener",
+                "ecr:ListTagsForResource",
+                "ecr:UploadLayerPart",
+                "ecr:ListImages",
+                "logs:CreateLogStream",
+                "sns:Publish",
+                "elasticloadbalancing:DescribeListeners",
+                "ecr:CompleteLayerUpload",
+                "ecs:DescribeServices",
+                "ecr:DescribeRepositories",
+                "ecr:BatchCheckLayerAvailability",
+                "ecs:CreateTaskSet",
+                "ecr:GetLifecyclePolicy",
+                "ecr:DescribeImageScanFindings",
                 "s3:*",
-                "s3-object-lambda:*"
+                "lambda:InvokeFunction",
+                "ecr:GetLifecyclePolicyPreview",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:GetAuthorizationToken",
+                "ecs:DeleteTaskSet",
+                "s3-object-lambda:*",
+                "logs:PutLogEvents",
+                "ecr:PutImage",
+                "s3:GetObject",
+                "elasticloadbalancing:ModifyRule",
+                "cloudwatch:DescribeAlarms",
+                "ecr:BatchGetImage",
+                "ecr:DescribeImages",
+                "elasticloadbalancing:DescribeTargetGroups",
+                "ecs:UpdateServicePrimaryTaskSet",
+                "elasticloadbalancing:DescribeRules",
+                "ecr:InitiateLayerUpload",
+                "s3:GetObjectVersion",
+                "ecr:GetRepositoryPolicy"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "ecs:UpdateService",
+                "secretsmanager:GetSecretValue"
+            ],
+            "Resource": [
+                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:non-prod/db-j0elOK",
+                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:prod/db-ZWaZpL",
+                "arn:aws:ecs:*:730911736748:service/*/*"
+            ]
         }
     ]
 }

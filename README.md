@@ -1,5 +1,7 @@
 # Terraform Starter
 
+State pull from S3 backend - terraform state pull > terraform.tfstate   
+
 Helpful Terraform Links:
 - [Terraform Language Documentation](https://www.terraform.io/docs/language/index.html)
 - [Resource: aws_security_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)
