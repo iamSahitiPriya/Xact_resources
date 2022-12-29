@@ -30,7 +30,7 @@ do
   INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance  --query DBInstances[0].DBInstanceStatus)
 done
 
-TEMP_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].Endpoint.Address)
+TEMP_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].Endpoint.Address | tr -d '"')
 
 echo "Copying prod instance to dev"
 pg_dump -C --dbname=postgresql://${TEMP_PROD_USERNAME}:${TEMP_PROD_PASSWORD}@${TEMP_PROD_HOST}:5432/${PROD_DB} | psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev
