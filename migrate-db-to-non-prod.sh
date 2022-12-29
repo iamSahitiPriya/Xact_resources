@@ -13,7 +13,7 @@ echo "Creating Instance from snapshot - ${SNAPSHOT_ID}"
 aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --db-snapshot-identifier ${SNAPSHOT_ID}  --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
 echo "Instance Created"
 INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
-while [ "$INSTANCE_STATUS" != "$AVAILABLE_STATUS" ];
+while [ $((INSTANCE_STATUS != AVAILABLE_STATUS)) ];
 do
   echo "Waiting on Instance to be available - ${INSTANCE_STATUS}"
   sleep 10
@@ -23,7 +23,7 @@ echo "Modifying Instance credentials"
 aws rds modify-db-instance --db-instance-identifier temp-prod-instance --master-user-password ${TEMP_PROD_PASSWORD}
 
 INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
-while [ "$INSTANCE_STATUS" != "$AVAILABLE_STATUS" ];
+while [ $((INSTANCE_STATUS != AVAILABLE_STATUS)) ];
 do
   echo "Waiting on Instance to be available - ${INSTANCE_STATUS}"
   sleep 10
