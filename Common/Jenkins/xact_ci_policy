@@ -25,10 +25,12 @@
                 "rds:DeleteDBInstance"
             ],
             "Resource": [
-                "arn:aws:rds:ap-south-1:730911736748:db:temp-prod-instance",
                 "arn:aws:ecs:*:730911736748:service/*/*",
+                "arn:aws:rds:ap-south-1:730911736748:db:temp-prod-instance",
+                "arn:aws:rds:ap-south-1:730911736748:db:xact-db-np",
+                "arn:aws:rds:*:730911736748:snapshot:*",
                 "arn:aws:secretsmanager:ap-south-1:730911736748:secret:non-prod/db-j0elOK",
-                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:prod/db-ZWaZpL"
+                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:migration/db-9Rphwi"
             ]
         },
         {
@@ -49,8 +51,8 @@
                 "ecs:CreateTaskSet",
                 "ecr:GetLifecyclePolicy",
                 "ecr:DescribeImageScanFindings",
-                "lambda:InvokeFunction",
                 "s3:*",
+                "lambda:InvokeFunction",
                 "ecr:GetLifecyclePolicyPreview",
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:GetAuthorizationToken",
@@ -64,8 +66,8 @@
                 "ecr:DescribeImages",
                 "cloudwatch:DescribeAlarms",
                 "elasticloadbalancing:DescribeTargetGroups",
-                "elasticloadbalancing:DescribeRules",
                 "ecs:UpdateServicePrimaryTaskSet",
+                "elasticloadbalancing:DescribeRules",
                 "ecr:InitiateLayerUpload",
                 "s3:GetObjectVersion",
                 "ecr:GetRepositoryPolicy"
