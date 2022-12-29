@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Migrate Prod DB') {
             steps {
-                sh 'migrate-db-to-non-prod.sh'
+                sh './migrate-db-to-non-prod.sh'
             }
         }
     }
