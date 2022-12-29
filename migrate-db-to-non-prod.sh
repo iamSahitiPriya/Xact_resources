@@ -13,9 +13,9 @@ echo "Instance Created"
 INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
 while [ ${INSTANCE_STATUS} != "available" ];
 do
+  sleep 10
   echo "Waiting on Instance to be available- ${INSTANCE_STATUS}"
   INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
-  sleep 10
 done
 echo "Modifying Instance credentials"
 aws rds modify-db-instance --db-instance-identifier temp-prod-instance --master-user-password ${TEMP_PROD_PASSWORD}
@@ -23,9 +23,9 @@ aws rds modify-db-instance --db-instance-identifier temp-prod-instance --master-
 INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
 while [ ${INSTANCE_STATUS} != "available" ];
 do
+  sleep 10
   echo "Waiting on Instance to be available - ${INSTANCE_STATUS}"
   INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
-  sleep 10
 done
 
 TEMP_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].Endpoint.Address)
