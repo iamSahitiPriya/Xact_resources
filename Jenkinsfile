@@ -2,7 +2,7 @@ pipeline {
     agent any
     parameters {
     string(name: 'Snapshot_Id', defaultValue: '', description: '')
-
+    }
     stages {
         stage('Migrate Prod DB') {
             steps {
@@ -15,5 +15,4 @@ pipeline {
                 cleanWs notFailBuild: true
             }
     }
-
 }
