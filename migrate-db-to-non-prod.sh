@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 TEMP_PROD_USERNAME=aws secretsmanager get-secret-value --secret-id migration/db --output text | grep -o '"username":"[^"]*' |  grep -o '[^"]*$' | sed 's/!/\\!/g'
 TEMP_PROD_PASSWORD=aws secretsmanager get-secret-value --secret-id migration/db --output text | grep -o '"password":"[^"]*' |  grep -o '[^"]*$' | sed 's/!/\\!/g'
 NON_PROD_USERNAME=aws secretsmanager get-secret-value --secret-id non-prod/db --output text --query SecretString | grep -o '"username":"[^"]*' |  grep -o '[^"]*$'
