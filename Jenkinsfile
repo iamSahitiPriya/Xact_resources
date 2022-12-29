@@ -14,7 +14,7 @@ pipeline {
     post {
             always {
                 sh 'echo "Delete temp instance"'
-                sh 'aws rds delete-db-instance --db-instance-identifier temp-prod-instance --delete-automated-backups --skip-final-snapshot'
+                sh './post-migration-cleanup.sh'
                 cleanWs notFailBuild: true
             }
     }
