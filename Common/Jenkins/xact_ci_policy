@@ -16,6 +16,25 @@
             "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
+                "rds:AddTagsToResource",
+                "ecs:UpdateService",
+                "secretsmanager:GetSecretValue",
+                "rds:RestoreDBInstanceFromDBSnapshot",
+                "rds:DescribeDBInstances",
+                "rds:ModifyDBInstance",
+                "rds:DeleteDBInstance"
+            ],
+            "Resource": [
+                "arn:aws:rds:ap-south-1:730911736748:db:temp-prod-instance",
+                "arn:aws:ecs:*:730911736748:service/*/*",
+                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:non-prod/db-j0elOK",
+                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:prod/db-ZWaZpL"
+            ]
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
                 "elasticloadbalancing:ModifyListener",
                 "ecr:ListTagsForResource",
                 "ecr:UploadLayerPart",
@@ -23,14 +42,12 @@
                 "logs:CreateLogStream",
                 "sns:Publish",
                 "elasticloadbalancing:DescribeListeners",
-                "rds:DescribeDBInstances",
                 "ecr:CompleteLayerUpload",
                 "ecs:DescribeServices",
                 "ecr:DescribeRepositories",
                 "ecr:BatchCheckLayerAvailability",
                 "ecs:CreateTaskSet",
                 "ecr:GetLifecyclePolicy",
-                "rds:AddTagsToResource",
                 "ecr:DescribeImageScanFindings",
                 "lambda:InvokeFunction",
                 "s3:*",
@@ -42,32 +59,18 @@
                 "logs:PutLogEvents",
                 "ecr:PutImage",
                 "s3:GetObject",
-                "rds:RestoreDBInstanceFromDBSnapshot",
                 "elasticloadbalancing:ModifyRule",
-                "cloudwatch:DescribeAlarms",
                 "ecr:BatchGetImage",
                 "ecr:DescribeImages",
+                "cloudwatch:DescribeAlarms",
                 "elasticloadbalancing:DescribeTargetGroups",
-                "ecs:UpdateServicePrimaryTaskSet",
                 "elasticloadbalancing:DescribeRules",
+                "ecs:UpdateServicePrimaryTaskSet",
                 "ecr:InitiateLayerUpload",
                 "s3:GetObjectVersion",
                 "ecr:GetRepositoryPolicy"
             ],
             "Resource": "*"
-        },
-        {
-            "Sid": "VisualEditor2",
-            "Effect": "Allow",
-            "Action": [
-                "ecs:UpdateService",
-                "secretsmanager:GetSecretValue"
-            ],
-            "Resource": [
-                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:non-prod/db-j0elOK",
-                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:prod/db-ZWaZpL",
-                "arn:aws:ecs:*:730911736748:service/*/*"
-            ]
         }
     ]
 }
