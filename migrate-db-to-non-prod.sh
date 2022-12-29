@@ -6,9 +6,10 @@ NON_PROD_PASSWORD=$(aws secretsmanager get-secret-value --secret-id non-prod/db 
 NON_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier xact-db-np --query DBInstances[0].Endpoint.Address)
 TEMP_PROD_INSTANCE_NAME=temp-prod-instance
 PROD_DB=xactprod
+SNAPSHOT_ID=$1
 
-echo "Creating Instance from snapshot"
-aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --db-snapshot-identifier rds:xact-db-prod-2022-12-28-21-35 --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
+echo "Creating Instance from snapshot - ${SNAPSHOT_ID}"
+aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --db-snapshot-identifier ${SNAPSHOT_ID}  --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
 echo "Instance Created"
 INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
 while [ ${INSTANCE_STATUS} != "available" ];
@@ -50,5 +51,3 @@ echo "Rename dev1 and qa1"
 psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c "ALTER DATABASE xactdev1 RENAME TO xactdev;"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE xactqa1 RENAME TO xactqa;"
 
-echo "Delete temp instance"
-aws rds delete-db-instance --db-instance-identifier temp-prod-instance --delete-automated-backups --skip-final-snapshot
