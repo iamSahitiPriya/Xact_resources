@@ -32,10 +32,10 @@ create_instance ${TEMP_NON_PROD_INSTANCE_NAME} rds:xact-db-np-2022-12-29-20-17
 
 echo "Modifying Instance credentials"
 aws rds modify-db-instance --db-instance-identifier temp-prod-instance --master-user-password ${TEMP_PROD_PASSWORD}
-
+sleep 30
 INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].DBInstanceStatus)
 while [ $INSTANCE_STAUS != '"resetting-master-credentials"' ]; do
-  sleep 5
+  sleep 10
   INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].DBInstanceStatus)
 
 done
