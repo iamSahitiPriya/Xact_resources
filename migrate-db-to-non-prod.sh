@@ -66,5 +66,3 @@ psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PRO
 echo "Rename dev1 and qa1"
 psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c "ALTER DATABASE xactdev1 RENAME TO xactdev;"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE xactqa1 RENAME TO xactqa;"
-
-while [ $((INSTANCE_STATUS!="backing-up")) ];do echo $INSTANCE_STATUS; INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].DBInstanceStatus); sleep 10; done
