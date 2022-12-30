@@ -2,7 +2,7 @@
 TEMP_PROD_USERNAME=$(aws secretsmanager get-secret-value --secret-id migration/db --output text | grep -o '"username":"[^"]*' |  grep -o '[^"]*$' | sed 's/!/\\!/g')
 TEMP_PROD_PASSWORD=$(aws secretsmanager get-secret-value --secret-id migration/db --output text | grep -o '"password":"[^"]*' |  grep -o '[^"]*$' | sed 's/!/\\!/g')
 NON_PROD_USERNAME=$(aws secretsmanager get-secret-value --secret-id non-prod/db --output text --query SecretString | grep -o '"username":"[^"]*' |  grep -o '[^"]*$')
-NON_PROD_PASSWORD=$(aws secretsmanager get-secret-value --secret-id non-prod/db --output text --query SecretString | grep -o '"password":"[^"]*' |  grep -o '[^"]*$' | sed 's/!/\\!/g')
+NON_PROD_PASSWORD=$(aws secretsmanager get-secret-value --secret-id non-prod/db --output text --query SecretString | grep -o '"password":"[^"]*' |  grep -o '[^"]*$')
 NON_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier xact-db-np --query DBInstances[0].Endpoint.Address | tr -d '"')
 TEMP_PROD_INSTANCE_NAME=temp-prod-instance
 PROD_DB=xactprod
@@ -21,8 +21,10 @@ do
 done
 echo "Modifying Instance credentials"
 aws rds modify-db-instance --db-instance-identifier temp-prod-instance --master-user-password ${TEMP_PROD_PASSWORD}
+sleep 10
 
 INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].DBInstanceStatus)
+echo $INSTANCE_STATUS
 while [ $INSTANCE_STATUS != $AVAILABLE_STATUS ];
 do
   echo "Waiting on Instance to be available - ${INSTANCE_STATUS}"
