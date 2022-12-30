@@ -34,7 +34,7 @@ create_instance ${TEMP_PROD_INSTANCE_NAME} rds:xact-db-prod-2022-12-29-21-35
 
 echo "Modifying Instance credentials"
 aws rds modify-db-instance --db-instance-identifier temp-prod-instance --master-user-password ${TEMP_PROD_PASSWORD}
-sleep 10
+sleep 20
 
 INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].DBInstanceStatus)
 echo $INSTANCE_STATUS
