@@ -50,19 +50,12 @@ TEMP_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier temp-pro
 echo "Copying prod instance to dev"
 pg_dump -C --dbname=postgresql://${TEMP_PROD_USERNAME}:${TEMP_PROD_PASSWORD}@${TEMP_PROD_HOST}:5432/${PROD_DB} | psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev
 
-echo "Renaming prod to dev1"
-psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE xactprod RENAME TO xactdev1;"
+echo "Renaming prod to dev"
+psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE xactprod RENAME TO xactdev;"
 
 echo "Copying prod instance to qa"
 pg_dump -C --dbname=postgresql://${TEMP_PROD_USERNAME}:${TEMP_PROD_PASSWORD}@${TEMP_PROD_HOST}:5432/${PROD_DB} | psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa
 
-echo "Renaming prod to qa1"
-psql --dbname=postgresql://"${NON_PROD_USERNAME}":"${NON_PROD_PASSWORD}"@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE xactprod RENAME TO xactqa1;"
+echo "Renaming prod to qa"
+psql --dbname=postgresql://"${NON_PROD_USERNAME}":"${NON_PROD_PASSWORD}"@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE xactprod RENAME TO xactqa;"
 
-echo "Drop old database"
-psql --dbname=postgresql://"${NON_PROD_USERNAME}":"${NON_PROD_PASSWORD}"@${NON_PROD_HOST}:5432/xactqa -c "DROP DATABASE xactdev;"
-psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "DROP DATABASE xactqa;"
-
-echo "Rename dev1 and qa1"
-psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c "ALTER DATABASE xactdev1 RENAME TO xactdev;"
-psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE xactqa1 RENAME TO xactqa;"
