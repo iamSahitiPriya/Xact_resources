@@ -20,18 +20,19 @@
                 "ecs:UpdateService",
                 "secretsmanager:GetSecretValue",
                 "rds:RestoreDBInstanceFromDBSnapshot",
-                "route53:ChangeResourceRecordSets",
                 "rds:DescribeDBInstances",
+                "route53:ChangeResourceRecordSets",
                 "rds:ModifyDBInstance",
                 "rds:DeleteDBInstance"
             ],
             "Resource": [
-                "arn:aws:route53:::hostedzone/*",
-                "arn:aws:ecs:*:730911736748:service/*/*",
                 "arn:aws:rds:ap-south-1:730911736748:db:*",
                 "arn:aws:rds:*:730911736748:snapshot:*",
+                "arn:aws:ecs:*:730911736748:service/*/*",
+                "arn:aws:route53:::hostedzone/*",
                 "arn:aws:secretsmanager:ap-south-1:730911736748:secret:non-prod/db-j0elOK",
-                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:migration/db-9Rphwi"
+                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:migration/db-9Rphwi",
+                "arn:aws:secretsmanager:ap-south-1:730911736748:secret:dev/dbuser-h24eWj"
             ]
         },
         {
@@ -53,8 +54,8 @@
                 "ecr:GetLifecyclePolicy",
                 "ecs:CreateTaskSet",
                 "ecr:DescribeImageScanFindings",
-                "lambda:InvokeFunction",
                 "s3:*",
+                "lambda:InvokeFunction",
                 "ecr:GetLifecyclePolicyPreview",
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:GetAuthorizationToken",
