@@ -3,7 +3,6 @@ TEMP_PROD_USERNAME=$(aws secretsmanager get-secret-value --secret-id migration/d
 TEMP_PROD_PASSWORD=$(aws secretsmanager get-secret-value --secret-id migration/db --output text | grep -o '"password":"[^"]*' | grep -o '[^"]*$' | sed 's/!/\\!/g')
 NON_PROD_USERNAME=$(aws secretsmanager get-secret-value --secret-id non-prod/db --output text --query SecretString | grep -o '"username":"[^"]*' | grep -o '[^"]*$')
 NON_PROD_PASSWORD=$(aws secretsmanager get-secret-value --secret-id non-prod/db --output text --query SecretString | grep -o '"password":"[^"]*' | grep -o '[^"]*$')
-NON_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier temp-non-prod-instance --query DBInstances[0].Endpoint.Address | tr -d '"')
 TEMP_PROD_INSTANCE_NAME=temp-prod-instance
 PROD_DB=xactprod
 SNAPSHOT_ID=$1
@@ -46,8 +45,9 @@ while [ $INSTANCE_STATUS != $AVAILABLE_STATUS ]; do
   INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].DBInstanceStatus)
 done
 
+NON_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier temp-non-prod-instance --query DBInstances[0].Endpoint.Address | tr -d '"')
 TEMP_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].Endpoint.Address | tr -d '"')
-sleep 20
+
 echo "Copying prod instance to dev"
 pg_dump -C --dbname=postgresql://${TEMP_PROD_USERNAME}:${TEMP_PROD_PASSWORD}@${TEMP_PROD_HOST}:5432/${PROD_DB} | psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev
 
