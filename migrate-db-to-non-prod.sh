@@ -7,6 +7,7 @@ TEMP_PROD_INSTANCE_NAME=temp-prod-instance
 TEMP_PROD_DB=xactprodtemp
 PROD_DB=xactprod
 NP_SNAPSHOT_ID=$1
+EXISTING_NP_INSTANCE=$(aws rds describe-db-instances --query DBInstances[*].DBInstanceIdentifier | grep -o 'xact-db-np-[^"]*')
 PROD_SNAPSHOT_ID=$2
 TEMP_NON_PROD_INSTANCE_NAME=xact-db-np-$(date +'%m-%d-%Y-%H-%M-%S')
 AVAILABLE_STATUS='"available"'
@@ -46,8 +47,8 @@ while [ $INSTANCE_STATUS != $AVAILABLE_STATUS ]; do
   INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].DBInstanceStatus)
 done
 
-NON_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier temp-non-prod-instance --query DBInstances[0].Endpoint.Address | tr -d '"')
-TEMP_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier temp-prod-instance --query DBInstances[0].Endpoint.Address | tr -d '"')
+NON_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_NON_PROD_INSTANCE_NAME} --query DBInstances[0].Endpoint.Address | tr -d '"')
+TEMP_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].Endpoint.Address | tr -d '"')
 
 echo "Creating temp-prod database"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "CREATE DATABASE ${TEMP_PROD_DB}"
@@ -76,3 +77,5 @@ psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_
 echo "Changing hosted zone"
 aws route53 change-resource-record-sets --hosted-zone-id $HOSTED_ZONE_ID --change-batch "{\"Changes\": [{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"xact-db-np.xact.thoughtworks.net\",\"Type\":\"CNAME\",\"TTL\":30,\"ResourceRecords\":[{\"Value\":\"${NON_PROD_HOST}\"}]}}]}"
 
+echo "Deleting existing NP instance"
+aws rds delete-db-instance --db-instance-identifier ${EXISTING_NP_INSTANCE} --delete-automated-backups --skip-final-snapshot
