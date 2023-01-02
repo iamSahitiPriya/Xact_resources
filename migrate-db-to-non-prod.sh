@@ -13,6 +13,8 @@ TEMP_NON_PROD_INSTANCE_NAME=xact-db-np-$(date +'%m-%d-%Y-%H-%M-%S')
 AVAILABLE_STATUS='"available"'
 HOSTED_ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name xact.thoughtworks.net --output json --query HostedZones[0].Id | tr -d '"')
 
+echo $EXISTING_NP_INSTANCE
+
 create_instance() {
   SNAPSHOT_ID=$2
   DB_INSTANCE_ID=$1
@@ -50,6 +52,12 @@ done
 NON_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_NON_PROD_INSTANCE_NAME} --query DBInstances[0].Endpoint.Address | tr -d '"')
 TEMP_PROD_HOST=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].Endpoint.Address | tr -d '"')
 
+echo "Dropping old databases if exists"
+psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "DROP DATABASE [IF EXISTS] xactdev1"
+psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "DROP DATABASE [IF EXISTS] xactqa1"
+psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "DROP DATABASE [IF EXISTS] xactprod"
+psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "DROP DATABASE [IF EXISTS] xactprodtemp"
+
 echo "Creating temp-prod database"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "CREATE DATABASE ${TEMP_PROD_DB}"
 
@@ -77,5 +85,5 @@ psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_
 echo "Changing hosted zone"
 aws route53 change-resource-record-sets --hosted-zone-id $HOSTED_ZONE_ID --change-batch "{\"Changes\": [{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"xact-db-np.xact.thoughtworks.net\",\"Type\":\"CNAME\",\"TTL\":30,\"ResourceRecords\":[{\"Value\":\"${NON_PROD_HOST}\"}]}}]}"
 
-echo "Deleting existing NP instance"
+echo "Deleting existing NP instance - $EXISTING_NP_INSTANCE"
 aws rds delete-db-instance --db-instance-identifier ${EXISTING_NP_INSTANCE} --delete-automated-backups --skip-final-snapshot
