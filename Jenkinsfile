@@ -1,13 +1,14 @@
 pipeline {
     agent any
     parameters {
-    string(name: 'Snapshot_Id', defaultValue: '', description: '')
+    string(name: 'NP_Snapshot_Id', defaultValue: '', description: '')
+    string(name: 'Prod_Snapshot_Id', defaultValue: '', description: '')
     }
     stages {
         stage('Migrate Prod DB') {
             steps {
                 sh "chmod +x -R ${env.WORKSPACE}"
-                sh "./migrate-db-to-non-prod.sh ${Snapshot_Id}"
+                sh "./migrate-db-to-non-prod.sh ${NP_Snapshot_Id} ${Prod_Snapshot_Id}"
             }
         }
     }

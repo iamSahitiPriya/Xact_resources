@@ -6,29 +6,29 @@ NON_PROD_PASSWORD=$(aws secretsmanager get-secret-value --secret-id non-prod/db 
 TEMP_PROD_INSTANCE_NAME=temp-prod-instance
 TEMP_PROD_DB=xactprodtemp
 PROD_DB=xactprod
-SNAPSHOT_ID=$1
-TEMP_NON_PROD_INSTANCE_NAME=temp-non-prod-instance
+NP_SNAPSHOT_ID=$1
+PROD_SNAPSHOT_ID=$2
+TEMP_NON_PROD_INSTANCE_NAME=xact-db-np-$(date +'%m-%d-%Y-%H-%M-%S')
 AVAILABLE_STATUS='"available"'
 HOSTED_ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name xact.thoughtworks.net --output json --query HostedZones[0].Id | tr -d '"')
 
-echo "Creating Instance from snapshot - ${SNAPSHOT_ID}"
-
 create_instance() {
-  echo $1
-  echo $2
+  SNAPSHOT_ID=$2
+  DB_INSTANCE_ID=$1
+  echo "Creating Instance from snapshot - ${SNAPSHOT_ID}"
   echo "Instance Created - $1"
 
-  aws rds restore-db-instance-from-db-snapshot --db-instance-identifier $1 --db-snapshot-identifier $2 --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
-  INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier $1 --query DBInstances[0].DBInstanceStatus)
+  aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${DB_INSTANCE_ID} --db-snapshot-identifier ${SNAPSHOT_ID} --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
+  INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${DB_INSTANCE_ID} --query DBInstances[0].DBInstanceStatus)
   while [ $INSTANCE_STATUS != $AVAILABLE_STATUS ]; do
     echo "Waiting on Instance to be available - ${INSTANCE_STATUS}"
     sleep 10
     INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier $1 --query DBInstances[0].DBInstanceStatus)
   done
 }
-create_instance ${TEMP_PROD_INSTANCE_NAME} rds:xact-db-prod-2022-12-29-21-35
+create_instance ${TEMP_PROD_INSTANCE_NAME} ${PROD_SNAPSHOT_ID}
 
-create_instance ${TEMP_NON_PROD_INSTANCE_NAME} rds:xact-db-np-2022-12-29-20-17
+create_instance ${TEMP_NON_PROD_INSTANCE_NAME} ${NP_SNAPSHOT_ID}
 
 echo "Modifying Instance credentials"
 aws rds modify-db-instance --db-instance-identifier temp-prod-instance --master-user-password ${TEMP_PROD_PASSWORD}
@@ -56,20 +56,18 @@ echo "Copying temp prod instance to dev"
 pg_dump -C --dbname=postgresql://${TEMP_PROD_USERNAME}:${TEMP_PROD_PASSWORD}@${TEMP_PROD_HOST}:5432/${PROD_DB} | psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/${TEMP_PROD_DB}
 
 echo "Renaming temp-prod to dev1"
-psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE ${TEMP_PROD_DB} RENAME TO xactdev1;"
-
-echo "Creating temp-prod database"
-psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "CREATE DATABASE ${TEMP_PROD_DB}"
+psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE ${PROD_DB} RENAME TO xactdev1;"
 
 echo "Copying prod instance to qa"
 pg_dump -C --dbname=postgresql://${TEMP_PROD_USERNAME}:${TEMP_PROD_PASSWORD}@${TEMP_PROD_HOST}:5432/${PROD_DB} | psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/${TEMP_PROD_DB}
 
 echo "Renaming prod to qa1"
-psql --dbname=postgresql://"${NON_PROD_USERNAME}":"${NON_PROD_PASSWORD}"@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE ${TEMP_PROD_DB} RENAME TO xactqa1;"
+psql --dbname=postgresql://"${NON_PROD_USERNAME}":"${NON_PROD_PASSWORD}"@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE ${PROD_DB} RENAME TO xactqa1;"
 
 echo "Drop old database"
 psql --dbname=postgresql://"${NON_PROD_USERNAME}":"${NON_PROD_PASSWORD}"@${NON_PROD_HOST}:5432/xactqa -c "DROP DATABASE xactdev;"
 psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev1 -c "DROP DATABASE xactqa;"
+psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev1 -c "DROP DATABASE xactprodtemp;"
 
 echo "Rename dev1 and qa1"
 psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa1 -c "ALTER DATABASE xactdev1 RENAME TO xactdev;"
@@ -77,3 +75,4 @@ psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_
 
 echo "Changing hosted zone"
 aws route53 change-resource-record-sets --hosted-zone-id $HOSTED_ZONE_ID --change-batch "{\"Changes\": [{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"xact-db-np.xact.thoughtworks.net\",\"Type\":\"CNAME\",\"TTL\":30,\"ResourceRecords\":[{\"Value\":\"${NON_PROD_HOST}\"}]}}]}"
+
