@@ -16,23 +16,22 @@ HOSTED_ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name xact.thoughtwo
 
 echo $EXISTING_NP_INSTANCE
 
-create_instance() {
-  SNAPSHOT_ID=$2
-  DB_INSTANCE_ID=$1
-  echo "Creating Instance from snapshot - ${SNAPSHOT_ID}"
-  echo "Instance Created - $1"
+echo "Creating Instance from snapshot - ${SNAPSHOT_ID}"
+aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --db-snapshot-identifier ${PROD_SNAPSHOT_ID} --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
+aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${TEMP_NON_PROD_INSTANCE_NAME} --db-snapshot-identifier ${NP_SNAPSHOT_ID} --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
+echo "Instance Created - $1"
 
-  aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${DB_INSTANCE_ID} --db-snapshot-identifier ${SNAPSHOT_ID} --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
-  INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${DB_INSTANCE_ID} --query DBInstances[0].DBInstanceStatus)
-  while [ $INSTANCE_STATUS != $AVAILABLE_STATUS ]; do
-    echo "Waiting on Instance to be available - ${INSTANCE_STATUS}"
+check_status() {
+  PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
+  NON_PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_NON_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
+  while ([ $PROD_INSTANCE_STATUS != $AVAILABLE_STATUS ] && [ $NON_PROD_INSTANCE_STATUS != $AVAILABLE_STATUS ]); do
+    echo "Waiting on Instance to be available - ${NON_PROD_INSTANCE_STATUS}"
     sleep 10
-    INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier $1 --query DBInstances[0].DBInstanceStatus)
+    PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${DB_INSTANCE_ID} --query DBInstances[0].DBInstanceStatus)
+    NON_PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${DB_INSTANCE_ID} --query DBInstances[0].DBInstanceStatus)
   done
 }
-create_instance ${TEMP_PROD_INSTANCE_NAME} ${PROD_SNAPSHOT_ID}
-
-create_instance ${TEMP_NON_PROD_INSTANCE_NAME} ${NP_SNAPSHOT_ID}
+check_status
 
 echo "Modifying Instance credentials"
 aws rds modify-db-instance --db-instance-identifier temp-prod-instance --master-user-password ${TEMP_PROD_PASSWORD}
@@ -83,13 +82,11 @@ echo "Rename dev1 and qa1"
 psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa1 -c "ALTER DATABASE xactdev1 RENAME TO xactdev;"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE xactqa1 RENAME TO xactqa;"
 
-
 echo "Grant permissions"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "'${DB_CONNECT_USERNAME}'";'
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c 'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA schema_name TO "'${DB_CONNECT_USERNAME}'";'
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "'${DB_CONNECT_USERNAME}'";'
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c 'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA schema_name TO "'${DB_CONNECT_USERNAME}'";'
-
 
 echo "Changing hosted zone"
 aws route53 change-resource-record-sets --hosted-zone-id $HOSTED_ZONE_ID --change-batch "{\"Changes\": [{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"xact-db-np.xact.thoughtworks.net\",\"Type\":\"CNAME\",\"TTL\":30,\"ResourceRecords\":[{\"Value\":\"${NON_PROD_HOST}\"}]}}]}"
