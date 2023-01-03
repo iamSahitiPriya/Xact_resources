@@ -19,19 +19,18 @@ echo $EXISTING_NP_INSTANCE
 echo "Creating Instance from snapshot - ${SNAPSHOT_ID}"
 aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --db-snapshot-identifier ${PROD_SNAPSHOT_ID} --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
 aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${TEMP_NON_PROD_INSTANCE_NAME} --db-snapshot-identifier ${NP_SNAPSHOT_ID} --vpc-security-group-ids sg-0c4805d53deaceac9 --no-publicly-accessible
-echo "Instance Created - $1"
+echo "Instance Created - $1, $2"
 
 check_status() {
-  PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
-  NON_PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_NON_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
-  while ([ $PROD_INSTANCE_STATUS != $AVAILABLE_STATUS ] && [ $NON_PROD_INSTANCE_STATUS != $AVAILABLE_STATUS ]); do
-    echo "Waiting on Instance to be available - ${NON_PROD_INSTANCE_STATUS}"
+  PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier $1 --query DBInstances[0].DBInstanceStatus)
+  while [ $PROD_INSTANCE_STATUS != $AVAILABLE_STATUS ]; do
+    echo "Waiting on Instance to be available - ${PROD_INSTANCE_STATUS}"
     sleep 10
-    PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
-    NON_PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_NON_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
+    PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier $1 --query DBInstances[0].DBInstanceStatus)
   done
 }
-check_status
+check_status ${TEMP_PROD_INSTANCE_NAME}
+check_status ${TEMP_NON_PROD_INSTANCE_NAME}
 
 echo "Modifying Instance credentials"
 aws rds modify-db-instance --db-instance-identifier temp-prod-instance --master-user-password ${TEMP_PROD_PASSWORD}
