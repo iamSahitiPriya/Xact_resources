@@ -1,8 +1,8 @@
 pipeline {
     agent any
     parameters {
-    string(name: 'NP_Snapshot_Id', defaultValue: '', description: '')
-    string(name: 'Prod_Snapshot_Id', defaultValue: '', description: '')
+    string(name: 'NP_Snapshot_Id', defaultValue: 'xact-db-np-1-snapshot', description: 'Snapshot Identifier for Non-prod Database')
+    string(name: 'Prod_Snapshot_Id', defaultValue: '', description: 'Snapshot Identifier for Prod Database')
     }
     stages {
         stage('Migrate Prod DB') {

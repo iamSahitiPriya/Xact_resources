@@ -22,11 +22,12 @@ aws rds restore-db-instance-from-db-snapshot --db-instance-identifier ${TEMP_NON
 echo "Instance Created - $1, $2"
 
 check_status() {
-  PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier $1 --query DBInstances[0].DBInstanceStatus)
+  DB_INSTANCE_ID=$1
+  PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${DB_INSTANCE_ID} --query DBInstances[0].DBInstanceStatus)
   while [ $PROD_INSTANCE_STATUS != $AVAILABLE_STATUS ]; do
     echo "Waiting on Instance to be available - ${PROD_INSTANCE_STATUS}"
     sleep 10
-    PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier $1 --query DBInstances[0].DBInstanceStatus)
+    PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${DB_INSTANCE_ID} --query DBInstances[0].DBInstanceStatus)
   done
 }
 check_status ${TEMP_PROD_INSTANCE_NAME}
