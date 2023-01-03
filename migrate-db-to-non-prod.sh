@@ -27,8 +27,8 @@ check_status() {
   while ([ $PROD_INSTANCE_STATUS != $AVAILABLE_STATUS ] && [ $NON_PROD_INSTANCE_STATUS != $AVAILABLE_STATUS ]); do
     echo "Waiting on Instance to be available - ${NON_PROD_INSTANCE_STATUS}"
     sleep 10
-    PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${DB_INSTANCE_ID} --query DBInstances[0].DBInstanceStatus)
-    NON_PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${DB_INSTANCE_ID} --query DBInstances[0].DBInstanceStatus)
+    PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
+    NON_PROD_INSTANCE_STATUS=$(aws rds describe-db-instances --db-instance-identifier ${TEMP_NON_PROD_INSTANCE_NAME} --query DBInstances[0].DBInstanceStatus)
   done
 }
 check_status
@@ -82,11 +82,13 @@ echo "Rename dev1 and qa1"
 psql --dbname=postgresql://"${NON_PROD_USERNAME}":${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa1 -c "ALTER DATABASE xactdev1 RENAME TO xactdev;"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "ALTER DATABASE xactqa1 RENAME TO xactqa;"
 
+
 echo "Grant permissions"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "'${DB_CONNECT_USERNAME}'";'
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c 'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA schema_name TO "'${DB_CONNECT_USERNAME}'";'
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "'${DB_CONNECT_USERNAME}'";'
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c 'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA schema_name TO "'${DB_CONNECT_USERNAME}'";'
+
 
 echo "Changing hosted zone"
 aws route53 change-resource-record-sets --hosted-zone-id $HOSTED_ZONE_ID --change-batch "{\"Changes\": [{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"xact-db-np.xact.thoughtworks.net\",\"Type\":\"CNAME\",\"TTL\":30,\"ResourceRecords\":[{\"Value\":\"${NON_PROD_HOST}\"}]}}]}"
