@@ -91,6 +91,7 @@ psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c 'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "'${DB_CONNECT_USERNAME}'";'
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "'${DB_CONNECT_USERNAME}'";'
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c 'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "'${DB_CONNECT_USERNAME}'";'
+psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactqa -c 'GRANT "'${NON_PROD_USERNAME}'" TO "'${DB_CONNECT_USERNAME}'";'
 
 echo "Off-scaling the Data"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "UPDATE tbl_assessment SET assessment_name=${DEFAULT_ASSESSMENT_NAME};"
@@ -103,3 +104,5 @@ aws route53 change-resource-record-sets --hosted-zone-id $HOSTED_ZONE_ID --chang
 
 echo "Deleting existing NP instance - $EXISTING_NP_INSTANCE"
 aws rds delete-db-instance --db-instance-identifier ${EXISTING_NP_INSTANCE} --delete-automated-backups --skip-final-snapshot
+
+psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c 'ALTER TABLE tbl_assessment ADD COLUMN assessment_description varchar(200) NOT NULL DEFAULT ''';
