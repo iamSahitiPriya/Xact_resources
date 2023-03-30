@@ -98,7 +98,7 @@ psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_
 echo "Off-scaling the Data"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "UPDATE tbl_assessment SET assessment_name=${DEFAULT_ASSESSMENT_NAME};"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "UPDATE tbl_organisation SET organisation_name=${DEFAULT_ORG_NAME};"
-psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "UPDATE tbl_assessment_users SET user_email=${DEFAULT_USER_EMAIL} WHERE role='Owner';"
+psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "UPDATE tbl_assessment_users SET user_email=${DEFAULT_USER_EMAIL};"
 psql --dbname=postgresql://${NON_PROD_USERNAME}:${NON_PROD_PASSWORD}@${NON_PROD_HOST}:5432/xactdev -c "DELETE FROM tbl_notification WHERE status='N';"
 
 echo "Changing hosted zone"
