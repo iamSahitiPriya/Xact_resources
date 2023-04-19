@@ -81,7 +81,7 @@ data "aws_ami" "amazon_linux" {
 
 resource "aws_instance" "web" {
   ami             = data.aws_ami.amazon_linux.id
-  instance_type   = "t2.small"
+  instance_type   = "t2.medium"
   key_name        = var.key_name
   security_groups = [aws_security_group.sonar_sg.name]
   user_data       = "${file("install_sonar.sh")}"
