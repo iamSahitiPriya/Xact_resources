@@ -21,3 +21,5 @@ sudo amazon-linux-extras install postgresql10 -y
 sudo systemctl daemon-reload
 sudo systemctl start jenkins
 sudo systemctl status jenkins
+sudo systemctl enable jenkins
+sudo systemctl enable docker
