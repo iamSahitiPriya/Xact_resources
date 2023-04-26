@@ -1,5 +1,5 @@
 provider "aws" {
-  region     = "ap-south-1"
+  region     = var.aws_region
 }
 
 resource "aws_iam_role" "start_stop_rds_lambda" {
@@ -69,9 +69,9 @@ resource "aws_iam_role_policy_attachment" "start_stop_rds_lambda" {
       runtime       = "python3.8"
       environment {
           variables = {
-            KEY = "non-prod"
-            VALUE = "auto-start-stop"
-            REGION = "ap-south-1"
+            KEY = var.start_stop_rds_key
+            VALUE = var.start_stop_rds_value
+            REGION = var.aws_region
           }
         }
     }
@@ -84,9 +84,9 @@ resource "aws_iam_role_policy_attachment" "start_stop_rds_lambda" {
     runtime       = "python3.8"
     environment {
         variables = {
-          KEY = "non-prod"
-          VALUE = "auto-start-stop"
-          REGION = "ap-south-1"
+          KEY = var.start_stop_rds_key
+          VALUE = var.start_stop_rds_value
+          REGION = var.aws_region
         }
       }
   }
